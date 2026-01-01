@@ -51,8 +51,6 @@ patch_abstract_machine() {
 build_sim() {
   cd "$REPO_ROOT"
 
-  # Adjust if your RTL paths differ:
-  # Based on your screenshot: rtl/miniRV.sv etc.
   verilator -Wall \
     -Wno-DECLFILENAME -Wno-UNUSED \
     --top-module miniRV_top \
@@ -72,7 +70,6 @@ build_sim() {
 
   echo "Built simulator: $REPO_ROOT/obj_dir/VminiRV_top"
 }
-
 # --- 5) Build hello (minirv-npc) and run on your sim
 build_and_run_hello() {
   export AM_HOME="$AM_DIR"
