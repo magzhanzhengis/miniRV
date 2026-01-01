@@ -1,0 +1,19 @@
+cat << 'EOF' > ~/minirv/.gitignore
+# build artifacts
+obj_dir/
+build/
+*.o
+*.a
+*.so
+*.log
+*.vcd
+*.fst
+
+# executables
+V*
+a.out
+
+# binaries
+*.elf
+*.bin
+EOF
