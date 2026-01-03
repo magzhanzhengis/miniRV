@@ -9,7 +9,7 @@ module control (
   output logic       lwlbu,        // 0: lw, 1: lbu (only meaningful when isload=1)
   output logic       islui,        // 1 for LUI
   output logic       jumpornot,
-  output logic       immorR2      // 1 for JALR
+  output logic       immorR2     // 1 for JALR
 );
 
   // RISC-V opcodes (RV32I base)

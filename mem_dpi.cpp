@@ -92,25 +92,14 @@ extern "C" uint32_t mem_read(uint32_t raddr) {
 //   if (wmask & 0x8) memory[p + 3] = (uint8_t)((wdata >> 24) & 0xff);
 // }
 extern "C" void mem_write(uint32_t waddr, uint32_t wdata, uint8_t wmask) {
-  // UART TX is byte-granular MMIO at 0x10000000
-  static int uart_dbg = 0;
-if (waddr < 0x80000000u && uart_dbg < 50) {
-  std::fprintf(stderr,
-    "[MMIO?] waddr=0x%08x wdata=0x%08x wmask=0x%02x\n",
-    waddr, wdata, wmask);
-  uart_dbg++;
-}
 
-  if ( (waddr & ~0x3u) == 0x10000000u ) {
-  uint8_t ch = 0;
-  if (wmask & 0x1) ch = (uint8_t)((wdata >> 0)  & 0xff);
-  else if (wmask & 0x2) ch = (uint8_t)((wdata >> 8)  & 0xff);
-  else if (wmask & 0x4) ch = (uint8_t)((wdata >> 16) & 0xff);
-  else if (wmask & 0x8) ch = (uint8_t)((wdata >> 24) & 0xff);
-  fputc(ch, stdout);
-  fflush(stdout);
-  return;
-}
+  // UART TX MMIO is the 32-bit word at 0x1000_0000 (byte stores may hit any lane)
+  // UART TX MMIO occupies the word at 0x1000_0000
+extern "C" void mem_write(uint32_t waddr, uint32_t wdata, uint8_t wmask) {
+  if (waddr == 0x10000000u) {      // write to UART (slide)
+    fputc(wdata & 0xff, stderr);   // slide: stderr
+    return;
+  }
 
   ensure_loaded();
   uint32_t a = waddr & ~0x3u;
@@ -122,3 +111,17 @@ if (waddr < 0x80000000u && uart_dbg < 50) {
   if (wmask & 0x4) memory[p + 2] = (uint8_t)((wdata >> 16) & 0xff);
   if (wmask & 0x8) memory[p + 3] = (uint8_t)((wdata >> 24) & 0xff);
 }
+
+
+
+  ensure_loaded();
+  uint32_t a = waddr & ~0x3u;
+  if (!in_ram(a)) return;
+  uint32_t p = a - MEM_BASE;
+
+  if (wmask & 0x1) memory[p + 0] = (uint8_t)(wdata & 0xff);
+  if (wmask & 0x2) memory[p + 1] = (uint8_t)((wdata >> 8) & 0xff);
+  if (wmask & 0x4) memory[p + 2] = (uint8_t)((wdata >> 16) & 0xff);
+  if (wmask & 0x8) memory[p + 3] = (uint8_t)((wdata >> 24) & 0xff);
+}
+

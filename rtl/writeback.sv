@@ -3,10 +3,11 @@ module writeback (
   input  logic [31:0] ramout,      // memory read word
   input  logic [1:0]  addr10,      // byte offset
   input  logic [31:0] lui,         // LUI immediate
-  input  logic [31:0] pc4,         // PC + 4
+  input  logic [31:0] pc4,     
+  input  logic        lwlbu,    // PC + 4
 
   input  logic        isload,      // lw or lbu
-  input  logic        islbu,        // lbu
+  input  logic        is_lbu,        // lbu
   input  logic        islui,        // lui
   input  logic        jumpornot,    // jalr
 
@@ -19,7 +20,7 @@ module writeback (
   logic [31:0] load_value;
 
   always_comb begin
-    if (islbu) begin
+    if (lwlbu) begin
       case (addr10)
         2'd0: load_value = {24'd0, ramout[7:0]};
         2'd1: load_value = {24'd0, ramout[15:8]};

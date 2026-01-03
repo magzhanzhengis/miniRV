@@ -73,8 +73,7 @@ assign dbg_wdata  = wdata; // value written to rd
   logic        jumpornot;    // 1 for JALR
   logic        immorR2;
   logic     we;
-
-logic is_ebreak;
+  logic is_ebreak;
 assign is_ebreak = (instr == 32'h0010_0073);
 
   // -------------------------
@@ -213,7 +212,7 @@ assign is_ebreak = (instr == 32'h0010_0073);
   writeback u_writeback (
     .alures        (alures),
     .ramout        (ramout),
-    .islbu         (lwlbu),
+    .lwlbu        (lwlbu),
     .islui         (islui),
     .isload        (isload),
     .jumpornot     (jumpornot),  // if you write pc+4 on jalr
